@@ -401,6 +401,15 @@ class DefaultBrowserToolbarControllerTest {
     }
 
     @Test
+    fun handleToolbarInstallToHomeScreenPress() {
+        val item = ToolbarMenu.Item.InstallToHomeScreen
+
+        controller.handleToolbarItemInteraction(item)
+
+        verify { metrics.track(Event.BrowserMenuItemTapped(Event.BrowserMenuItemTapped.Item.INSTALL_TO_HOMESCREEN)) }
+    }
+
+    @Test
     fun handleToolbarSharePress() {
         val item = ToolbarMenu.Item.Share
 
