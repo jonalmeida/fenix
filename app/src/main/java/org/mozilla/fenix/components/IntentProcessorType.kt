@@ -11,14 +11,42 @@ import org.mozilla.fenix.customtabs.ExternalAppBrowserActivity
 import org.mozilla.fenix.migration.MigrationProgressActivity
 
 enum class IntentProcessorType {
-    EXTERNAL_APP, NEW_TAB, MIGRATION, OTHER;
+    /**
+     * An external app has tried to open a site link.
+     */
+    EXTERNAL_APP,
+
+    /**
+     * Launch a new tab from an internally routed intent.
+     */
+    NEW_TAB,
+
+    /**
+     * A migration is taking place so we should short-circuit other intents.
+     */
+    MIGRATION,
+
+    /**
+     * Launch a web app.
+     */
+    WEBAPP,
+
+    /**
+     * Launch a page shortcut.
+     */
+    SHORTCUT,
+
+    /**
+     * All other unknown intent types.
+     */
+    OTHER;
 
     /**
      * The destination activity based on this intent
      */
     val activityClassName: String
         get() = when (this) {
-            EXTERNAL_APP -> ExternalAppBrowserActivity::class.java.name
+            EXTERNAL_APP, SHORTCUT, WEBAPP -> ExternalAppBrowserActivity::class.java.name
             NEW_TAB, OTHER -> HomeActivity::class.java.name
             MIGRATION -> MigrationProgressActivity::class.java.name
         }
@@ -27,7 +55,7 @@ enum class IntentProcessorType {
      * Should this intent automatically navigate to the browser?
      */
     fun shouldOpenToBrowser(intent: Intent): Boolean = when (this) {
-        EXTERNAL_APP -> true
+        EXTERNAL_APP, WEBAPP, SHORTCUT -> true
         NEW_TAB -> intent.flags and Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY == 0
         MIGRATION, OTHER -> false
     }
@@ -37,12 +65,22 @@ enum class IntentProcessorType {
  * Classifies the [IntentProcessorType] based on the [IntentProcessor] that handled the [Intent].
  */
 fun IntentProcessors.getType(processor: IntentProcessor?) = when {
-    migrationIntentProcessor == processor -> IntentProcessorType.MIGRATION
-    externalAppIntentProcessors.contains(processor) ||
-            customTabIntentProcessor == processor ||
-            privateCustomTabIntentProcessor == processor -> IntentProcessorType.EXTERNAL_APP
-    intentProcessor == processor ||
-            privateIntentProcessor == processor ||
-            fennecPageShortcutIntentProcessor == processor -> IntentProcessorType.NEW_TAB
-    else -> IntentProcessorType.OTHER
+    migrationIntentProcessor == processor -> {
+        IntentProcessorType.MIGRATION
+    }
+    externalAppIntentProcessors.contains(processor) -> {
+        IntentProcessorType.WEBAPP
+    }
+    customTabIntentProcessor == processor || privateCustomTabIntentProcessor == processor -> {
+        IntentProcessorType.EXTERNAL_APP
+    }
+    intentProcessor == processor || privateIntentProcessor == processor -> {
+        IntentProcessorType.NEW_TAB
+    }
+    fennecPageShortcutIntentProcessor == processor -> {
+        IntentProcessorType.SHORTCUT
+    }
+    else -> {
+        IntentProcessorType.OTHER
+    }
 }
