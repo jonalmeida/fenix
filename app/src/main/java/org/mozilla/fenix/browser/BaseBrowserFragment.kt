@@ -294,7 +294,7 @@ abstract class BaseBrowserFragment : Fragment(), UserInteractionHandler, Activit
                 thumbnailsFeature.get()?.requestScreenshot()
                 findNavController().nav(
                     R.id.browserFragment,
-                    BrowserFragmentDirections.actionGlobalTabTrayDialogFragment()
+                    BrowserFragmentDirections.actionGlobalTabsTrayFragment()
                 )
             },
             onCloseTab = { closedSession ->

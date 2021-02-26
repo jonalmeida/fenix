@@ -1015,7 +1015,7 @@ class HomeFragment : Fragment() {
     private fun openTabTray() {
         findNavController().nav(
             R.id.homeFragment,
-            HomeFragmentDirections.actionGlobalTabTrayDialogFragment()
+            HomeFragmentDirections.actionGlobalTabsTrayFragment()
         )
     }
 
