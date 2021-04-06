@@ -13,13 +13,11 @@ import androidx.appcompat.app.AppCompatDialogFragment
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.navigation.fragment.findNavController
 import com.google.android.material.bottomsheet.BottomSheetBehavior
-import kotlinx.android.synthetic.main.component_tabstray2.*
-import kotlinx.android.synthetic.main.component_tabstray2.view.*
 import org.mozilla.fenix.HomeActivity
 import kotlinx.android.synthetic.main.component_tabstray2.tab_layout
 import kotlinx.android.synthetic.main.component_tabstray2.tabsTray
 import kotlinx.android.synthetic.main.component_tabstray2.view.tab_wrapper
-import kotlinx.android.synthetic.main.component_tabstray_fab.view.new_tab_button
+import kotlinx.android.synthetic.main.component_tabstray_fab.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import mozilla.components.browser.state.selector.normalTabs
 import mozilla.components.lib.state.ext.consumeFrom
@@ -44,6 +42,7 @@ class TabsTrayFragment : AppCompatDialogFragment(), TabsTrayInteractor {
     private lateinit var tabsTrayController: DefaultTabsTrayController
     private lateinit var behavior: BottomSheetBehavior<ConstraintLayout>
     private val tabLayoutMediator = ViewBoundFeatureWrapper<TabLayoutMediator>()
+    private val floatingActionButtonBinding = ViewBoundFeatureWrapper<FloatingActionButtonBinding>()
 
     private val selectTabUseCase by lazy {
         SelectTabUseCaseWrapper(
@@ -133,17 +132,25 @@ class TabsTrayFragment : AppCompatDialogFragment(), TabsTrayInteractor {
             view = view
         )
 
+        floatingActionButtonBinding.set(
+            feature = FloatingActionButtonBinding(
+                store = tabsTrayStore,
+                actionButton = new_tab_button,
+                browserTrayInteractor = browserTrayInteractor
+            ),
+            owner = this,
+            view = view
+        )
+
         consumeFrom(requireComponents.core.store) {
             view.findViewById<TabCounter>(R.id.tab_counter)?.apply {
                 setCount(requireComponents.core.store.state.normalTabs.size)
             }
         }
-        setupNewTabButtons(tabsTray.currentItem)
     }
 
     override fun setCurrentTrayPosition(position: Int, smoothScroll: Boolean) {
         tabsTray.setCurrentItem(position, smoothScroll)
-        setupNewTabButtons(position)
     }
 
     override fun navigateToBrowser() {
@@ -186,43 +193,5 @@ class TabsTrayFragment : AppCompatDialogFragment(), TabsTrayInteractor {
             )
             isUserInputEnabled = false
         }
-    }
-
-    private fun setupNewTabButtons(currentPage: Int) {
-        fabView?.let { fabView ->
-            when (currentPage) {
-                NORMAL -> {
-                    fabView.new_tab_button.shrink()
-                    fabView.new_tab_button.show()
-                    fabView.new_tab_button.setOnClickListener {
-                        browserTrayInteractor.onFabClicked(false)
-                    }
-                }
-                PRIVATE -> {
-                    fabView.new_tab_button.text =
-                        requireContext().resources.getText(R.string.tab_drawer_fab_content)
-                    fabView.new_tab_button.extend()
-                    fabView.new_tab_button.show()
-                    fabView.new_tab_button.setOnClickListener {
-                        browserTrayInteractor.onFabClicked(true)
-                    }
-                }
-                SYNC -> {
-                    fabView.new_tab_button.text =
-                        requireContext().resources.getText(R.string.preferences_sync_now)
-                    fabView.new_tab_button.extend()
-                    fabView.new_tab_button.show()
-                    fabView.new_tab_button.setOnClickListener {
-                    }
-                }
-            }
-        }
-    }
-
-    companion object {
-        // TabsTray Pages
-        const val NORMAL = 0
-        const val PRIVATE = 1
-        const val SYNC = 2
     }
 }
