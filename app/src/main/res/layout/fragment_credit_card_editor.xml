@@ -1,10 +1,13 @@
-<?xml version="1.0" encoding="utf-8"?>
-<!-- This Source Code Form is subject to the terms of the Mozilla Public
+<?xml version="1.0" encoding="utf-8"?><!-- This Source Code Form is subject to the terms of the Mozilla Public
    - License, v. 2.0. If a copy of the MPL was not distributed with this
    - file, You can obtain one at http://mozilla.org/MPL/2.0/. -->
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.core.widget.NestedScrollView
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+<androidx.constraintlayout.widget.ConstraintLayout
     android:id="@+id/linearLayout"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
@@ -23,19 +26,18 @@
         android:textColor="?primaryText"
         android:textSize="12sp"
         app:fontFamily="@font/metropolis_semibold"
-        app:layout_constraintTop_toBottomOf="@+id/navigationToolbar"
         app:layout_constraintHorizontal_bias="0.3"
         app:layout_constraintLeft_toLeftOf="parent" />
 
     <com.google.android.material.textfield.TextInputLayout
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/card_number_title"
         android:id="@+id/card_number_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="?primaryText"
         app:errorEnabled="true"
-        app:hintEnabled="false">
+        app:hintEnabled="false"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/card_number_title">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/card_number_input"
@@ -68,7 +70,7 @@
         android:textSize="12sp"
         app:fontFamily="@font/metropolis_semibold"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/card_number_layout"/>
+        app:layout_constraintTop_toBottomOf="@+id/card_number_layout" />
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/name_on_card_layout"
@@ -78,7 +80,7 @@
         android:textColor="?primaryText"
         app:hintEnabled="false"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf= "@+id/name_on_card_title">
+        app:layout_constraintTop_toBottomOf="@+id/name_on_card_title">
 
         <com.google.android.material.textfield.TextInputEditText
             android:id="@+id/name_on_card_input"
@@ -114,19 +116,23 @@
 
     <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/expiry_month_drop_down"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        tools:listitem="@android:layout/simple_list_item_1"
+        app:layout_constraintEnd_toStartOf="@+id/guideline_expiration"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/expiration_date_title" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/expiration_date_title"
+        tools:listitem="@android:layout/simple_list_item_1"
+        tools:spinnerMode="dropdown" />
 
     <androidx.appcompat.widget.AppCompatSpinner
         android:id="@+id/expiry_year_drop_down"
-        android:layout_width="wrap_content"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        tools:listitem="@android:layout/simple_list_item_1"
-        app:layout_constraintLeft_toRightOf="@id/expiry_month_drop_down"
-        app:layout_constraintTop_toBottomOf="@id/expiration_date_title" />
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/guideline_expiration"
+        app:layout_constraintTop_toBottomOf="@id/expiration_date_title"
+        tools:listitem="@android:layout/simple_list_item_1" />
 
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -180,4 +186,12 @@
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <androidx.constraintlayout.widget.Guideline
+        android:id="@+id/guideline_expiration"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        app:layout_constraintGuide_percent="0.5013193" />
+
 </androidx.constraintlayout.widget.ConstraintLayout>
+</androidx.core.widget.NestedScrollView>
