@@ -92,13 +92,13 @@
     <!-- Text for the negative action button to dismiss the Close Tabs Banner. -->
     <string name="tab_tray_close_tabs_banner_negative_button_text">Dismiss</string>
 
-    <!-- Home screen icons - Long press shortcuts -->
+    <!-- Home screen -->
     <!-- Shortcut action to open new tab -->
     <string name="home_screen_shortcut_open_new_tab_2">New tab</string>
     <!-- Shortcut action to open new private tab -->
     <string name="home_screen_shortcut_open_new_private_tab_2">New private tab</string>
-    <!-- Heading for the Top Sites block -->
-    <string name="home_screen_top_sites_heading">Top sites</string>
+    <!-- Header text for jumping back in recent tabs in the home screen -->
+    <string name="home_screen_recent_tabs_header">Jump back in</string>
 
     <!-- Browser Fragment -->
     <!-- Content description (not visible, for screen readers etc.): Navigate to open tabs -->
