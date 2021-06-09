@@ -67,6 +67,7 @@ import mozilla.components.browser.menu.view.MenuButton
 import mozilla.components.browser.state.selector.findTab
 import mozilla.components.browser.state.selector.normalTabs
 import mozilla.components.browser.state.selector.privateTabs
+import mozilla.components.browser.state.selector.selectedTab
 import mozilla.components.browser.state.state.BrowserState
 import mozilla.components.browser.state.state.selectedOrDefaultSearchEngine
 import mozilla.components.browser.state.store.BrowserStore
@@ -85,6 +86,7 @@ import mozilla.components.support.ktx.kotlinx.coroutines.flow.ifChanged
 import mozilla.components.ui.tabcounter.TabCounterMenu
 import org.mozilla.fenix.BrowserDirection
 import org.mozilla.fenix.Config
+import org.mozilla.fenix.FeatureFlags
 import org.mozilla.fenix.GleanMetrics.PerfStartup
 import org.mozilla.fenix.HomeActivity
 import org.mozilla.fenix.R
@@ -112,6 +114,7 @@ import org.mozilla.fenix.ext.runIfFragmentIsAttached
 import org.mozilla.fenix.ext.settings
 import org.mozilla.fenix.home.mozonline.showPrivacyPopWindow
 import org.mozilla.fenix.home.sessioncontrol.DefaultSessionControlController
+import org.mozilla.fenix.home.sessioncontrol.RecentTabsListBinding
 import org.mozilla.fenix.home.sessioncontrol.SessionControlInteractor
 import org.mozilla.fenix.home.sessioncontrol.SessionControlView
 import org.mozilla.fenix.home.sessioncontrol.viewholders.CollectionViewHolder
@@ -171,6 +174,7 @@ class HomeFragment : Fragment() {
     private lateinit var currentMode: CurrentMode
 
     private val topSitesFeature = ViewBoundFeatureWrapper<TopSitesFeature>()
+    private val recentTabsListBinding = ViewBoundFeatureWrapper<RecentTabsListBinding>()
 
     @VisibleForTesting
     internal var getMenuButton: () -> MenuButton? = { menuButton }
@@ -242,6 +246,17 @@ class HomeFragment : Fragment() {
             owner = viewLifecycleOwner,
             view = view
         )
+
+        if (FeatureFlags.showRecentTabs) {
+            recentTabsListBinding.set(
+                feature = RecentTabsListBinding(
+                    browserStore = components.core.store,
+                    homeStore = homeFragmentStore
+                ),
+                owner = viewLifecycleOwner,
+                view = view
+            )
+        }
 
         _sessionControlInteractor = SessionControlInteractor(
             DefaultSessionControlController(
@@ -578,7 +593,15 @@ class HomeFragment : Fragment() {
                         )
                     ).getTip()
                 },
-                showCollectionPlaceholder = components.settings.showCollectionsPlaceholderOnHome
+                showCollectionPlaceholder = components.settings.showCollectionsPlaceholderOnHome,
+                recentTabs = run {
+                    val selectedTab = components.core.store.state.selectedTab
+                    if (selectedTab != null) {
+                        listOf(selectedTab)
+                    } else {
+                        emptyList()
+                    }
+                }
             )
         )
 
